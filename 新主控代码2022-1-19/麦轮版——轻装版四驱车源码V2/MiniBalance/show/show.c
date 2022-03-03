@@ -187,7 +187,20 @@ void oled_show(void)
 											else if(Flag_Way==4)				  OLED_ShowString(0,50,"POS");
 											OLED_Refresh_Gram();	//刷新
 					}
-
+					 if(Flag_Way==5)//工训模式
+					{
+//						OLED_ShowString(00,0,"LX");
+//						OLED_ShowNumber(15,0, PS2_LX,3,12);  //PS2的数据			
+//						OLED_ShowString(40,0,"LY");
+//						OLED_ShowNumber(55,0, PS2_LY,3,12);  //PS2的数据
+//						OLED_ShowString(80,0,"RX");
+//						OLED_ShowNumber(95,0, PS2_RX,3,12);
+						OLED_ShowString(0,0,"TARGET");
+						OLED_ShowNumber(45,0,target_yaw,3,12);
+						OLED_ShowString(70,0,"NOW");
+						if(Yaw<0)		  OLED_ShowNumber(105,0,Yaw+360,3,12);
+								else					OLED_ShowNumber(105,0,Yaw,3,12);	
+					}
 }
 /**************************************************************************
 函数功能：向APP发送数据
@@ -248,6 +261,7 @@ void oled_show_once(void)
 	if(Flag_Way==2)				  OLED_ShowString(50,30,"CCD");
 	if(Flag_Way==3)				  OLED_ShowString(50,30,"ELE");
 	if(Flag_Way==4)				  OLED_ShowString(50,30,"POS");
+	if(Flag_Way==5)				  OLED_ShowString(50,30,"PRO");
 	
 	OLED_ShowString(0,40,"Press User Key");
   OLED_ShowString(0,50,"TO End Selection");

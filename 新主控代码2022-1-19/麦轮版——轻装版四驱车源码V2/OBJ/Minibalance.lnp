@@ -49,6 +49,7 @@
 "..\obj\mpu6050.o"
 "..\obj\show.o"
 "..\obj\datascope_dp.o"
+"..\obj\auto.o"
 "..\obj\gimble.o"
 --strict --scatter "..\OBJ\Minibalance.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols

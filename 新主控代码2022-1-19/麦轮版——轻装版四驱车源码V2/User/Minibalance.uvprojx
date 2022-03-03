@@ -332,7 +332,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_ HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\User;..\MiniBalance_COER;..\STM32F10x_FWLib\inc;..\MiniBalance_HARDWARE;..\SYSTEM;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\MiniBalance_HARDWARE\DMP;..\MiniBalance_HARDWARE\IIC;..\MiniBalance_HARDWARE\MPU6050;..\MiniBalance_HARDWARE\ENCODER;..\MiniBalance_HARDWARE\OLED;..\MiniBalance\show;..\MiniBalance_HARDWARE\LED;..\MiniBalance_HARDWARE\KEY;..\MiniBalance_HARDWARE\ADC;..\MiniBalance_HARDWARE\MOTOR;..\MiniBalance_HARDWARE\TIMER;..\MiniBalance_HARDWARE\EXTI;..\MiniBalance\DataScope_DP;..\MiniBalance\filter;..\MiniBalance_HARDWARE\STMFLASH;..\MiniBalance_HARDWARE\USARTX;..\MiniBalance_HARDWARE\NRF24L01;..\MiniBalance_HARDWARE\SPI;..\MiniBalance_HARDWARE\CAN;..\MiniBalance_HARDWARE\PS2;..\MiniBalance_HARDWARE\gimble</IncludePath>
+              <IncludePath>..\User;..\MiniBalance_COER;..\STM32F10x_FWLib\inc;..\MiniBalance_HARDWARE;..\SYSTEM;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\MiniBalance_HARDWARE\DMP;..\MiniBalance_HARDWARE\IIC;..\MiniBalance_HARDWARE\MPU6050;..\MiniBalance_HARDWARE\ENCODER;..\MiniBalance_HARDWARE\OLED;..\MiniBalance\show;..\MiniBalance_HARDWARE\LED;..\MiniBalance_HARDWARE\KEY;..\MiniBalance_HARDWARE\ADC;..\MiniBalance_HARDWARE\MOTOR;..\MiniBalance_HARDWARE\TIMER;..\MiniBalance_HARDWARE\EXTI;..\MiniBalance\DataScope_DP;..\MiniBalance\filter;..\MiniBalance_HARDWARE\STMFLASH;..\MiniBalance_HARDWARE\USARTX;..\MiniBalance_HARDWARE\NRF24L01;..\MiniBalance_HARDWARE\SPI;..\MiniBalance_HARDWARE\CAN;..\MiniBalance_HARDWARE\PS2;..\MiniBalance_HARDWARE\gimble;..\MiniBalance\Auto_mod</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -649,6 +649,11 @@
               <FileName>DataScope_DP.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\MiniBalance\DataScope_DP\DataScope_DP.C</FilePath>
+            </File>
+            <File>
+              <FileName>Auto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MiniBalance\Auto_mod\Auto.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -6,8 +6,11 @@
 **************************************************************************/
 u8 Usart3_Receive;
 u16 USART5_RX_STA=0;       //接收状态标记	  
-s8 USART5_TX_BUF[USART5_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
-s8 USART5_RX_BUF[USART5_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
+u8 USART5_TX_BUF[USART5_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
+u8 USART5_RX_BUF[USART5_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
+
+s8 USART5_TX_BUFdebug[USART5_REC_LENdebug];     //接收缓冲,最大USART_REC_LEN个字节.
+s8 USART5_RX_BUFdebug[USART5_REC_LENdebug];     //接收缓冲,最大USART_REC_LEN个字节.
 /**************************实现函数**********************************************
 *功    能:		usart发送一个字节
 *********************************************************************************/
@@ -145,11 +148,13 @@ void uart5_init(u32 bound)
 void UART5_IRQHandler(void) //串口5中断处理
 {
 	s8 Res,start=1;
-	if(USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+	if(PosDebug==1)
+	{
+		if(USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
 	{
 		Res =USART_ReceiveData(UART5);//读取接收到的数据
-		USART5_RX_BUF[USART5_RX_STA]=Res ;
-		if(USART5_RX_BUF[0]!=-91)
+		USART5_RX_BUFdebug[USART5_RX_STA]=Res ;
+		if(USART5_RX_BUFdebug[0]!=-91)
 		{
 			start=0;
 			USART5_RX_STA=0;
@@ -159,7 +164,45 @@ void UART5_IRQHandler(void) //串口5中断处理
 		if(start==1)
 		{		
 		USART5_RX_STA++;
+		if(USART5_RX_STA>(USART5_REC_LENdebug-1))USART5_RX_STA=0;//接收数据错误,重新开始接收	
+		}  			
+	}
+}
+	else
+	{
+	if(USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)  //接收中断
+	{
+		Res =USART_ReceiveData(UART5);//读取接收到的数据
+		USART5_RX_BUF[USART5_RX_STA]=Res ;
+		if(USART5_RX_BUF[0]!=0xaa)
+		{
+			start=0;
+			USART5_RX_STA=0;
+		}
+		else
+		{
+			start=1;		
+		}
+		if(start==1)
+		{		
+			USART5_RX_STA++;
+			if(USART5_RX_BUF[1]==0xaf)
+			{
+				if(USART5_RX_BUF[2]==0xae)
+				{
+					if(USART5_RX_BUF[3]==0x06)
+					{
+						
+					}
+					else {USART5_RX_STA=3;start=0;}
+				
+				}
+				else {USART5_RX_STA=2;start=0;}
+			}
+			else {USART5_RX_STA=1;}
+						
 		if(USART5_RX_STA>(USART5_REC_LEN-1))USART5_RX_STA=0;//接收数据错误,重新开始接收	
 		}  			
 	}
+}
 } 

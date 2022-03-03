@@ -65,6 +65,7 @@
 #define GPIO_F 5
 #define GPIO_G 6 
 
+
 #define FTIR   1  //下降沿触发
 #define RTIR   2  //上升沿触发
 #include "delay.h"
@@ -115,6 +116,8 @@ extern int RC_Velocity,RC_Position;         //设置遥控的速度和位置值
 extern int PS2_LX,PS2_LY,PS2_RX,PS2_RY,PS2_KEY; //PS2相关变量 
 extern u16 CCD_Zhongzhi,CCD_Yuzhi,ADV[128];//CCD相关变量
 extern int Sensor_Left,Sensor_Middle,Sensor_Right,Sensor;//电磁巡线相关
+extern s8 PosDebug;
+extern s8 X,Y;
 /////////////////////////////////////////////////////////////////  
 void Stm32_Clock_Init(u8 PLL);  //时钟初始化  
 void Sys_Soft_Reset(void);      //系统软复位

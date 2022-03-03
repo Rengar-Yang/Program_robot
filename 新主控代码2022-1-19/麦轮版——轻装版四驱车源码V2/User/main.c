@@ -17,7 +17,9 @@
 串口占用情况：串口2用于上位机通信，串口3用于控制机械臂，串口5用于Openmv通信
 主要函数均位于control.c文件里
 
-最后更新 2022-2-23
+正在进行：自动模式代码编写，各种参数调试
+
+最后更新 2022-3-1
 **************************************************************************/
 u8 Flag_Left,Flag_Right,Flag_Direction=0,Flag_Way,Flag_Next,Turn_Flag;   //蓝牙遥控相关的变量
 u8 Flag_Stop=1; //停止标志位和 显示标志位 默认停止 显示打开
@@ -49,6 +51,9 @@ int RC_Velocity=30,RC_Position=3000;         //设置遥控的速度和位置值
 int PS2_LX,PS2_LY,PS2_RX,PS2_RY,PS2_KEY; //PS2相关变量 
 u16 CCD_Zhongzhi,CCD_Yuzhi,ADV[128]={0};//CCD相关变量
 int Sensor_Left,Sensor_Middle,Sensor_Right,Sensor;//电磁巡线相关
+s8 key13=0,key14=0,key15=0,key16=0;//按键记录变量
+s8 PosDebug=1;//位置调试模式开关，为1打开位置调试
+s8 X,Y;//红外坐标，一个场地方格为一个单位
 int main(void)
   { 
 		delay_init();	    	            //=====延时函数初始化	
@@ -59,8 +64,7 @@ int main(void)
 		MY_NVIC_PriorityGroupConfig(2);	//=====设置中断分组
     MiniBalance_PWM_Init(7199,0);   //=====初始化PWM 10KHZ，用于驱动电机 如需初始化电调接口 
 		uart2_init(9600);               //=====串口2初始化
-		uart3_init(9600);             //=====串口3初始化 
-		uart5_init(9600);             //=====串口5初始化 
+		uart3_init(9600);       	      //=====串口3初始化 
 		OLED_Init();                    //=====OLED初始化	    
     Encoder_Init_TIM2();            //=====编码器接口
 		Encoder_Init_TIM3();            //=====编码器接口
@@ -72,6 +76,10 @@ int main(void)
 		delay_ms(1000);                  //=====延时
 		if(Run_Flag==0){ while(select())	{	}	} //=====选择运行模式 
 		else Flag_Stop=0;//===位置模式直接使能电机
+		if(PosDebug==1)
+			uart5_init(9600);       	      //=====串口5初始化 
+		else
+			uart5_init(115200);       	      //=====串口5初始化 
 		Position_D=0;
 		delay_ms(500);                  //=====延时
     IIC_Init();                     //=====IIC初始化
@@ -87,8 +95,8 @@ int main(void)
 	  else if(Flag_Way==2)ccd_Init();  //=====CCD初始化
 	  else if(Flag_Way==3)ele_Init();  //=====电磁传感器初始化	
 	  MiniBalance_EXTI_Init();        //=====MPU6050 5ms定时中断初始化
-		USART5_TX_BUF[0]=0xa5;
-		USART5_TX_BUF[USART5_REC_LEN-1]=0x5a;
+		USART5_TX_BUFdebug[0]=0xa5;
+		USART5_TX_BUFdebug[USART5_REC_LENdebug-1]=0x5a;
     while(1)
 	   {	
 			   if(Flag_Way==1)
@@ -98,12 +106,33 @@ int main(void)
 						PS2_RX=PS2_AnologData(PSS_RX);
 						PS2_RY=PS2_AnologData(PSS_RY);
 						PS2_KEY=PS2_DataKey();	
-					 if(PS2_KEY==16)
-						 UART_DM_ReportData(DM0_Speed10_Position_0,10); //直接改变位置是10，执行动作组是5	
-					 if(PS2_KEY==14)
-						 UART_DM_ReportData(DM0_Speed10_Position_90,10); 
-					 if(PS2_KEY==13)
-							UART_DM_ReportData(DM_Action0,5); 				
+//					 if(PS2_KEY==16)
+//						 UART_DM_ReportData(DM0_Speed10_Position_0,10); //直接改变位置是10，执行动作组是5	
+//					 if(PS2_KEY==14)
+//						 UART_DM_ReportData(DM0_Speed10_Position_90,10); 
+					 if(PS2_KEY==13&&key13!=1)
+					 {
+						 key13=1;
+						 USART_SendData(UART5,'a');//向串口5发送数据													
+					 }
+//					 if(PS2_KEY!=13)key13=0;
+					 else if(PS2_KEY==14&&key14!=1)
+					 {
+						 key14=1;
+						 USART_SendData(UART5,'d');//向串口5发送数据													
+					 }
+//					 if(PS2_KEY!=14)key14=0;
+					  else if(PS2_KEY==15&&key15!=1)
+					 {
+						 key15=1;
+						 USART_SendData(UART5,'b');//向串口5发送数据													
+					 }
+					  else if(PS2_KEY==16&&key16!=1)
+					 {
+						 key16=1;
+						 USART_SendData(UART5,'c');//向串口5发送数据													
+					 }
+					  else key13=key14=key15=key16=0;
 			   }
 				  if(Flag_Way==0)
 			   {
@@ -111,17 +140,20 @@ int main(void)
           //USART_TX();               //串口发送
 				 }
 				 
-				  USART5_TX_BUF[1]=Position_X;//串口5通信，用于与Openmv通信。帧头0xa5，帧尾0x5a。目前暂时用于调试位置环
-					USART5_TX_BUF[2]=Position_Y;
-					USART5_TX_BUF[USART5_REC_LEN-2]=0;
-				 for(i=1;i<=USART5_REC_LEN-3;i++)
-					USART5_TX_BUF[USART5_REC_LEN-2]+=USART5_TX_BUF[i];				 
-					 for(t=0;t<USART5_REC_LEN;t++)
-					{
-						USART_SendData(UART5, USART5_TX_BUF[t]);//向串口5发送数据
-						while(USART_GetFlagStatus(UART5,USART_FLAG_TC)!=SET);//等待发送结束
-					}
-					
+				 if(PosDebug==1)
+				 {
+						USART5_TX_BUFdebug[1]=Position_X;//串口5通信，用于与Openmv通信。帧头0xa5，帧尾0x5a。目前暂时用于调试位置环
+						USART5_TX_BUFdebug[2]=Position_Y;
+						USART5_TX_BUFdebug[USART5_REC_LENdebug-2]=0;
+					  for(i=1;i<=USART5_REC_LENdebug-3;i++)
+						USART5_TX_BUFdebug[USART5_REC_LENdebug-2]+=USART5_TX_BUFdebug[i];				 
+						 for(t=0;t<USART5_REC_LENdebug;t++)
+						{
+							USART_SendData(UART5, USART5_TX_BUFdebug[t]);//向串口5发送数据
+							while(USART_GetFlagStatus(UART5,USART_FLAG_TC)!=SET);//等待发送结束
+						}
+				}
+				 
 					APP_Show();	       //APP相关
 					oled_show();          //===显示屏打开
 	  } 

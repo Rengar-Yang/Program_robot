@@ -118,7 +118,8 @@ u8  select(void)
 		else if(count>Angle&&count<=2*Angle)	 Flag_Way=1,Flag_Stop=1;  //PS2遥控模式
 		else if(count>2*Angle&&count<=3*Angle) Flag_Way=2,Flag_Stop=1;	//CCD巡线模式
 		else if(count>3*Angle&&count<=4*Angle) Flag_Way=3,Flag_Stop=1;	//电磁巡线模式
-		else if(count>4*Angle&&count<=5*Angle) Flag_Way=4,Flag_Stop=1;	//位置模式
+		else if(count>4*Angle&&count<=5*Angle) Flag_Way=4,Flag_Stop=1,PosDebug=1;	//位置模式
+		else if(count>5*Angle&&count<=6*Angle) Flag_Way=5,Flag_Stop=1,PosDebug=0;	//工训模式
 	  else TIM5->CNT=0;
     if(KEY==0||Start_Count>600){
 			Flag_Next=1;//如果按键按下或者超过大概8秒没有转动轮子	

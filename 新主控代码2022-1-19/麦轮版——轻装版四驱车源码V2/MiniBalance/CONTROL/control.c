@@ -427,9 +427,9 @@ void Get_RC(void)
 		}	
 		if(Flag_Way==4)//位置控制
 		{		
-			Target_X=USART5_RX_BUF[1];//上位机发来目标位置坐标
-			Target_Y=USART5_RX_BUF[2];
-			target_yaw=USART5_RX_BUF[3];
+			Target_X=USART5_RX_BUFdebug[1];//上位机发来目标位置坐标
+			Target_Y=USART5_RX_BUFdebug[2];
+			target_yaw=USART5_RX_BUFdebug[3];
 			Move_X=positionX_control(Position_X,Target_X); //三轴运动目标值
 			Move_Y=positionY_control(Position_Y,Target_Y); //三轴运动目标值		
 			Move_Z=angle_control(Yaw,target_yaw);				 
